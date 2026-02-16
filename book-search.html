@@ -1,0 +1,575 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Book Search - API Test Client</title>
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+
+      body {
+        font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        min-height: 100vh;
+        padding: 20px;
+      }
+
+      .container {
+        max-width: 1200px;
+        margin: 0 auto;
+        background: white;
+        border-radius: 20px;
+        box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+        overflow: hidden;
+      }
+
+      .header {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        padding: 30px;
+        text-align: center;
+      }
+
+      .header h1 {
+        font-size: 2.5em;
+        margin-bottom: 10px;
+      }
+
+      .header p {
+        font-size: 1.1em;
+        opacity: 0.95;
+      }
+
+      .content {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 20px;
+        padding: 20px;
+      }
+
+      @media (max-width: 768px) {
+        .content {
+          grid-template-columns: 1fr;
+        }
+      }
+
+      .section {
+        background: #f8f9fa;
+        border-radius: 15px;
+        padding: 20px;
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+      }
+
+      .section h2 {
+        color: #333;
+        margin-bottom: 20px;
+        padding-bottom: 10px;
+        border-bottom: 2px solid #667eea;
+      }
+
+      .section h3 {
+        color: #555;
+        margin: 15px 0 10px;
+      }
+
+      .form-group {
+        margin-bottom: 15px;
+      }
+
+      label {
+        display: block;
+        margin-bottom: 5px;
+        color: #666;
+        font-weight: 500;
+      }
+
+      input,
+      select {
+        width: 100%;
+        padding: 12px;
+        border: 2px solid #e0e0e0;
+        border-radius: 8px;
+        font-size: 14px;
+        transition: border-color 0.3s;
+      }
+
+      input:focus,
+      select:focus {
+        outline: none;
+        border-color: #667eea;
+      }
+
+      button {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        border: none;
+        padding: 12px 24px;
+        border-radius: 8px;
+        font-size: 14px;
+        font-weight: 600;
+        cursor: pointer;
+        transition:
+          transform 0.2s,
+          box-shadow 0.2s;
+        margin-right: 10px;
+        margin-bottom: 10px;
+      }
+
+      button:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+      }
+
+      button.primary {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      }
+
+      button.success {
+        background: linear-gradient(135deg, #48bb78 0%, #2f855a 100%);
+      }
+
+      button.warning {
+        background: linear-gradient(135deg, #f6ad55 0%, #dd6b20 100%);
+      }
+
+      .response-area {
+        grid-column: 1 / -1;
+        background: #1e1e2f;
+        color: #fff;
+        padding: 20px;
+        border-radius: 15px;
+        font-family: "Monaco", "Menlo", "Courier New", monospace;
+        font-size: 14px;
+        overflow-x: auto;
+        white-space: pre-wrap;
+        word-wrap: break-word;
+        min-height: 200px;
+        max-height: 400px;
+        overflow-y: auto;
+      }
+
+      .status-badge {
+        display: inline-block;
+        padding: 5px 10px;
+        border-radius: 20px;
+        font-size: 12px;
+        font-weight: 600;
+        margin-left: 10px;
+      }
+
+      .status-success {
+        background: #48bb78;
+        color: white;
+      }
+
+      .status-error {
+        background: #f56565;
+        color: white;
+      }
+
+      .book-list {
+        margin-top: 20px;
+        max-height: 300px;
+        overflow-y: auto;
+      }
+
+      .book-item {
+        background: white;
+        padding: 15px;
+        border-radius: 8px;
+        margin-bottom: 10px;
+        border-left: 4px solid #667eea;
+        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        transition: transform 0.2s;
+      }
+
+      .book-item:hover {
+        transform: translateX(5px);
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+      }
+
+      .book-item h4 {
+        color: #333;
+        margin-bottom: 5px;
+      }
+
+      .book-item p {
+        color: #666;
+        font-size: 14px;
+      }
+
+      .book-id {
+        display: inline-block;
+        background: #667eea;
+        color: white;
+        padding: 2px 8px;
+        border-radius: 12px;
+        font-size: 12px;
+        margin-right: 10px;
+      }
+
+      .search-filters {
+        display: flex;
+        gap: 10px;
+        margin-bottom: 15px;
+      }
+
+      .search-filters select {
+        width: 120px;
+      }
+
+      .search-filters input {
+        flex: 1;
+      }
+
+      .no-results {
+        text-align: center;
+        color: #666;
+        padding: 20px;
+        font-style: italic;
+      }
+
+      .stats {
+        display: flex;
+        justify-content: space-between;
+        margin-top: 10px;
+        padding: 10px;
+        background: #e3f2fd;
+        border-radius: 8px;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <div class="header">
+        <h1>🔍 Book Search Client</h1>
+        <p>Search books by Title or Author</p>
+        <p style="margin-top: 10px; font-size: 16px">
+          Server: <strong>http://localhost:3001</strong>
+        </p>
+      </div>
+
+      <div class="content">
+        <!-- Search Section -->
+        <div class="section">
+          <h2>🔍 Search Books</h2>
+
+          <div class="search-filters">
+            <select id="searchType">
+              <option value="title">Title</option>
+              <option value="author" selected>Author</option>
+              <option value="both">Both</option>
+            </select>
+            <input
+              type="text"
+              id="searchInput"
+              placeholder="Enter search term..."
+              value="Scott"
+            />
+          </div>
+
+          <div style="display: flex; gap: 10px">
+            <button onclick="searchBooks()" class="primary">🔍 Search</button>
+            <button onclick="clearSearch()" class="warning">Clear</button>
+            <button onclick="getAllBooks()" class="success">
+              Show All Books
+            </button>
+          </div>
+
+          <div class="stats" id="searchStats">
+            Enter a search term and click Search
+          </div>
+        </div>
+
+        <!-- Quick Search Examples -->
+        <div class="section">
+          <h2>📝 Quick Search Examples</h2>
+
+          <h3>Search by Author:</h3>
+          <div
+            style="
+              display: flex;
+              flex-wrap: wrap;
+              gap: 10px;
+              margin-bottom: 15px;
+            "
+          >
+            <button onclick="quickSearch('author', 'Scott')">
+              F. Scott Fitzgerald
+            </button>
+            <button onclick="quickSearch('author', 'Harper')">
+              Harper Lee
+            </button>
+            <button onclick="quickSearch('author', 'Orwell')">
+              George Orwell
+            </button>
+            <button onclick="quickSearch('author', 'Tolkien')">
+              J.R.R. Tolkien
+            </button>
+            <button onclick="quickSearch('author', 'Salinger')">
+              J.D. Salinger
+            </button>
+          </div>
+
+          <h3>Search by Title:</h3>
+          <div style="display: flex; flex-wrap: wrap; gap: 10px">
+            <button onclick="quickSearch('title', 'Gatsby')">Gatsby</button>
+            <button onclick="quickSearch('title', 'Mockingbird')">
+              Mockingbird
+            </button>
+            <button onclick="quickSearch('title', '1984')">1984</button>
+            <button onclick="quickSearch('title', 'Hobbit')">Hobbit</button>
+            <button onclick="quickSearch('title', 'Catcher')">Catcher</button>
+          </div>
+        </div>
+
+        <!-- Response Area -->
+        <div class="response-area" id="response">
+          Click Search to find books. Results will appear here...
+        </div>
+
+        <!-- Results Section -->
+        <div class="section" style="grid-column: 1 / -1">
+          <h2>📚 Search Results</h2>
+          <div id="results" class="book-list">No search performed yet.</div>
+        </div>
+      </div>
+    </div>
+
+    <script>
+      const API_URL = "http://localhost:3001";
+
+      // ============================================
+      // SEARCH FUNCTIONS
+      // ============================================
+
+      async function searchBooks() {
+        const searchType = document.getElementById("searchType").value;
+        const searchTerm = document.getElementById("searchInput").value.trim();
+
+        if (!searchTerm) {
+          alert("Please enter a search term");
+          return;
+        }
+
+        try {
+          // Show loading state
+          document.getElementById("response").innerHTML = "Searching...";
+          document.getElementById("results").innerHTML =
+            '<p style="text-align: center;">Searching...</p>';
+
+          // Make the API call
+          const response = await fetch(
+            `${API_URL}/books/search/${encodeURIComponent(searchTerm)}`,
+          );
+          const data = await response.json();
+
+          // Display the raw response
+          document.getElementById("response").innerHTML = JSON.stringify(
+            data,
+            null,
+            2,
+          );
+
+          // Process and display results based on search type
+          displaySearchResults(data, searchType, searchTerm);
+
+          // Update stats
+          updateSearchStats(data, searchType, searchTerm);
+        } catch (error) {
+          document.getElementById("response").innerHTML =
+            `Error: ${error.message}`;
+          document.getElementById("results").innerHTML =
+            `<p class="no-results">Error: ${error.message}</p>`;
+        }
+      }
+
+      function displaySearchResults(data, searchType, searchTerm) {
+        const resultsDiv = document.getElementById("results");
+
+        // Check if data exists and has results
+        if (!data || !data.data || data.data.length === 0) {
+          resultsDiv.innerHTML = `<p class="no-results">No books found matching "${searchTerm}"</p>`;
+          return;
+        }
+
+        // Filter results based on search type (client-side filtering for accuracy)
+        let filteredBooks = data.data;
+
+        if (searchType === "title") {
+          filteredBooks = data.data.filter((book) =>
+            book.title.toLowerCase().includes(searchTerm.toLowerCase()),
+          );
+        } else if (searchType === "author") {
+          filteredBooks = data.data.filter((book) =>
+            book.author.toLowerCase().includes(searchTerm.toLowerCase()),
+          );
+        }
+        // For 'both', keep all results from API
+
+        if (filteredBooks.length === 0) {
+          resultsDiv.innerHTML = `<p class="no-results">No books found with ${searchType} containing "${searchTerm}"</p>`;
+          return;
+        }
+
+        // Build HTML for results
+        let html = "";
+        filteredBooks.forEach((book) => {
+          // Highlight the matching term
+          let titleDisplay = book.title;
+          let authorDisplay = book.author;
+
+          if (searchType === "title" || searchType === "both") {
+            const titleRegex = new RegExp(`(${searchTerm})`, "gi");
+            titleDisplay = book.title.replace(titleRegex, "<mark>$1</mark>");
+          }
+
+          if (searchType === "author" || searchType === "both") {
+            const authorRegex = new RegExp(`(${searchTerm})`, "gi");
+            authorDisplay = book.author.replace(authorRegex, "<mark>$1</mark>");
+          }
+
+          html += `
+                    <div class="book-item">
+                        <h4>
+                            <span class="book-id">ID: ${book.id}</span>
+                            ${titleDisplay}
+                        </h4>
+                        <p><strong>Author:</strong> ${authorDisplay}</p>
+                        <p style="font-size: 12px; color: #999;">
+                            Added: ${new Date(book.createdAt).toLocaleString()}
+                        </p>
+                    </div>
+                `;
+        });
+
+        resultsDiv.innerHTML = html;
+      }
+
+      function updateSearchStats(data, searchType, searchTerm) {
+        const statsDiv = document.getElementById("searchStats");
+
+        if (!data || !data.data) {
+          statsDiv.innerHTML = `No results for "${searchTerm}"`;
+          return;
+        }
+
+        let filteredCount = data.data.length;
+        if (searchType === "title") {
+          filteredCount = data.data.filter((book) =>
+            book.title.toLowerCase().includes(searchTerm.toLowerCase()),
+          ).length;
+        } else if (searchType === "author") {
+          filteredCount = data.data.filter((book) =>
+            book.author.toLowerCase().includes(searchTerm.toLowerCase()),
+          ).length;
+        }
+
+        statsDiv.innerHTML = `
+                <span><strong>Search term:</strong> "${searchTerm}"</span>
+                <span><strong>Search by:</strong> ${searchType}</span>
+                <span><strong>Results found:</strong> ${filteredCount}</span>
+            `;
+      }
+
+      // ============================================
+      // HELPER FUNCTIONS
+      // ============================================
+
+      async function getAllBooks() {
+        try {
+          const response = await fetch(`${API_URL}/books`);
+          const data = await response.json();
+
+          document.getElementById("response").innerHTML = JSON.stringify(
+            data,
+            null,
+            2,
+          );
+
+          // Display all books
+          const resultsDiv = document.getElementById("results");
+          if (!data.data || data.data.length === 0) {
+            resultsDiv.innerHTML =
+              '<p class="no-results">No books in the library</p>';
+            return;
+          }
+
+          let html = "";
+          data.data.forEach((book) => {
+            html += `
+                        <div class="book-item">
+                            <h4>
+                                <span class="book-id">ID: ${book.id}</span>
+                                ${book.title}
+                            </h4>
+                            <p><strong>Author:</strong> ${book.author}</p>
+                            <p style="font-size: 12px; color: #999;">
+                                Added: ${new Date(book.createdAt).toLocaleString()}
+                            </p>
+                        </div>
+                    `;
+          });
+
+          resultsDiv.innerHTML = html;
+
+          // Update stats
+          document.getElementById("searchStats").innerHTML =
+            `Showing all ${data.data.length} books`;
+        } catch (error) {
+          document.getElementById("response").innerHTML =
+            `Error: ${error.message}`;
+        }
+      }
+
+      function quickSearch(type, term) {
+        document.getElementById("searchType").value = type;
+        document.getElementById("searchInput").value = term;
+        searchBooks();
+      }
+
+      function clearSearch() {
+        document.getElementById("searchInput").value = "";
+        document.getElementById("response").innerHTML =
+          "Search cleared. Enter a new search term.";
+        document.getElementById("results").innerHTML =
+          "No search performed yet.";
+        document.getElementById("searchStats").innerHTML =
+          "Enter a search term and click Search";
+      }
+
+      // ============================================
+      // TEST SPECIFIC AUTHORS
+      // ============================================
+
+      // Test function to verify author search
+      async function testAuthorSearch() {
+        console.log("Testing Author Search...");
+
+        const authors = ["Scott", "Harper", "Orwell", "Tolkien", "Salinger"];
+
+        for (let author of authors) {
+          try {
+            const response = await fetch(`${API_URL}/books/search/${author}`);
+            const data = await response.json();
+            console.log(`Search for "${author}":`, data);
+          } catch (error) {
+            console.error(`Error searching for ${author}:`, error);
+          }
+        }
+      }
+
+      // Run test on page load (optional)
+      // testAuthorSearch();
+
+      // Load all books on page load
+      window.onload = function () {
+        getAllBooks();
+      };
+    </script>
+  </body>
+</html>

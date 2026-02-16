@@ -1,0 +1,674 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Book API Test Client</title>
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+
+      body {
+        font-family:
+          -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen, Ubuntu,
+          sans-serif;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        min-height: 100vh;
+        padding: 20px;
+      }
+
+      .container {
+        max-width: 1200px;
+        margin: 0 auto;
+        background: white;
+        border-radius: 20px;
+        box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+        overflow: hidden;
+      }
+
+      .header {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        padding: 30px;
+        text-align: center;
+      }
+
+      .header h1 {
+        font-size: 2.5em;
+        margin-bottom: 10px;
+      }
+
+      .header p {
+        font-size: 1.1em;
+        opacity: 0.95;
+      }
+
+      .content {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 20px;
+        padding: 20px;
+      }
+
+      @media (max-width: 768px) {
+        .content {
+          grid-template-columns: 1fr;
+        }
+      }
+
+      .section {
+        background: #f8f9fa;
+        border-radius: 15px;
+        padding: 20px;
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+      }
+
+      .section h2 {
+        color: #333;
+        margin-bottom: 20px;
+        padding-bottom: 10px;
+        border-bottom: 2px solid #667eea;
+      }
+
+      .section h3 {
+        color: #555;
+        margin: 15px 0 10px;
+      }
+
+      .form-group {
+        margin-bottom: 15px;
+      }
+
+      label {
+        display: block;
+        margin-bottom: 5px;
+        color: #666;
+        font-weight: 500;
+      }
+
+      input {
+        width: 100%;
+        padding: 12px;
+        border: 2px solid #e0e0e0;
+        border-radius: 8px;
+        font-size: 14px;
+        transition: border-color 0.3s;
+      }
+
+      input:focus {
+        outline: none;
+        border-color: #667eea;
+      }
+
+      button {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        border: none;
+        padding: 12px 24px;
+        border-radius: 8px;
+        font-size: 14px;
+        font-weight: 600;
+        cursor: pointer;
+        transition:
+          transform 0.2s,
+          box-shadow 0.2s;
+        margin-right: 10px;
+        margin-bottom: 10px;
+      }
+
+      button:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+      }
+
+      button.danger {
+        background: linear-gradient(135deg, #f56565 0%, #c53030 100%);
+      }
+
+      button.success {
+        background: linear-gradient(135deg, #48bb78 0%, #2f855a 100%);
+      }
+
+      .response-area {
+        grid-column: 1 / -1;
+        background: #1e1e2f;
+        color: #fff;
+        padding: 20px;
+        border-radius: 15px;
+        font-family: "Monaco", "Menlo", "Courier New", monospace;
+        font-size: 14px;
+        overflow-x: auto;
+        white-space: pre-wrap;
+        word-wrap: break-word;
+        min-height: 200px;
+        max-height: 400px;
+        overflow-y: auto;
+      }
+
+      .status-badge {
+        display: inline-block;
+        padding: 5px 10px;
+        border-radius: 20px;
+        font-size: 12px;
+        font-weight: 600;
+        margin-left: 10px;
+      }
+
+      .status-success {
+        background: #48bb78;
+        color: white;
+      }
+
+      .status-error {
+        background: #f56565;
+        color: white;
+      }
+
+      .button-group {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 10px;
+        margin-top: 15px;
+      }
+
+      .search-result {
+        margin-top: 15px;
+        padding: 10px;
+        background: #e3f2fd;
+        border-radius: 8px;
+        border-left: 4px solid #2196f3;
+      }
+
+      .footer {
+        background: #f1f1f1;
+        padding: 15px;
+        text-align: center;
+        color: #666;
+        font-size: 14px;
+        border-top: 1px solid #ddd;
+      }
+
+      .footer a {
+        color: #667eea;
+        text-decoration: none;
+      }
+
+      .footer a:hover {
+        text-decoration: underline;
+      }
+
+      .id-input-group {
+        display: flex;
+        gap: 10px;
+        align-items: center;
+      }
+
+      .id-input-group input {
+        flex: 1;
+      }
+
+      .book-list {
+        margin-top: 20px;
+        max-height: 300px;
+        overflow-y: auto;
+      }
+
+      .book-item {
+        background: white;
+        padding: 15px;
+        border-radius: 8px;
+        margin-bottom: 10px;
+        border-left: 4px solid #667eea;
+        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+      }
+
+      .book-item h4 {
+        color: #333;
+        margin-bottom: 5px;
+      }
+
+      .book-item p {
+        color: #666;
+        font-size: 14px;
+      }
+
+      .book-id {
+        display: inline-block;
+        background: #667eea;
+        color: white;
+        padding: 2px 8px;
+        border-radius: 12px;
+        font-size: 12px;
+        margin-right: 10px;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <div class="header">
+        <h1>📚 Book API Test Client</h1>
+        <p>Complete REST API Testing Interface</p>
+        <p style="margin-top: 10px; font-size: 16px">
+          Server: <strong>http://localhost:3001</strong>
+        </p>
+      </div>
+
+      <div class="content">
+        <!-- GET Operations Section -->
+        <div class="section">
+          <h2>📖 GET Operations</h2>
+
+          <div class="button-group">
+            <button onclick="getAllBooks()" class="success">
+              Get All Books
+            </button>
+            <button onclick="getApiInfo()">Get API Info</button>
+          </div>
+
+          <h3>Get Book by ID</h3>
+          <div class="id-input-group">
+            <input
+              type="number"
+              id="getBookId"
+              placeholder="Enter Book ID (e.g., 1)"
+              min="1"
+              value="1"
+            />
+            <button onclick="getBookById()">Get Book</button>
+          </div>
+
+          <h3>Search Books</h3>
+          <div class="id-input-group">
+            <input
+              type="text"
+              id="searchQuery"
+              placeholder="Search by title or author"
+            />
+            <button onclick="searchBooks()">Search</button>
+          </div>
+        </div>
+
+        <!-- POST Operations Section -->
+        <div class="section">
+          <h2>📝 POST Operations</h2>
+
+          <h3>Add New Book</h3>
+          <div class="form-group">
+            <label>Title:</label>
+            <input
+              type="text"
+              id="newTitle"
+              placeholder="Enter book title"
+              value="The Great Gatsby"
+            />
+          </div>
+          <div class="form-group">
+            <label>Author:</label>
+            <input
+              type="text"
+              id="newAuthor"
+              placeholder="Enter author name"
+              value="F. Scott Fitzgerald"
+            />
+          </div>
+          <button onclick="addBook()" class="success">Add Book</button>
+
+          <h3 style="margin-top: 20px">Quick Add Samples</h3>
+          <div class="button-group">
+            <button onclick="addSampleBook1()">Add Gatsby</button>
+            <button onclick="addSampleBook2()">Add Mockingbird</button>
+            <button onclick="addSampleBook3()">Add 1984</button>
+            <button onclick="addSampleBook4()">Add Hobbit</button>
+          </div>
+        </div>
+
+        <!-- PUT Operations Section -->
+        <div class="section">
+          <h2>📝 PUT Operations (Update)</h2>
+
+          <h3>Update Book</h3>
+          <div class="form-group">
+            <label>Book ID to Update:</label>
+            <input
+              type="number"
+              id="updateId"
+              placeholder="Book ID"
+              min="1"
+              value="1"
+            />
+          </div>
+          <div class="form-group">
+            <label>New Title (leave empty to keep current):</label>
+            <input type="text" id="updateTitle" placeholder="New title" />
+          </div>
+          <div class="form-group">
+            <label>New Author (leave empty to keep current):</label>
+            <input type="text" id="updateAuthor" placeholder="New author" />
+          </div>
+          <button onclick="updateBook()">Update Book</button>
+        </div>
+
+        <!-- DELETE Operations Section -->
+        <div class="section">
+          <h2>🗑️ DELETE Operations</h2>
+
+          <h3>Delete Single Book</h3>
+          <div class="id-input-group">
+            <input
+              type="number"
+              id="deleteId"
+              placeholder="Book ID to delete"
+              min="1"
+              value="1"
+            />
+            <button onclick="deleteBook()" class="danger">Delete Book</button>
+          </div>
+
+          <h3>Delete All Books</h3>
+          <button onclick="deleteAllBooks()" class="danger">
+            Delete All Books
+          </button>
+          <p style="color: #666; font-size: 12px; margin-top: 5px">
+            ⚠️ This action cannot be undone
+          </p>
+        </div>
+
+        <!-- Response Area -->
+        <div class="response-area" id="response">
+          Click any button to test the API. Response will appear here...
+        </div>
+
+        <!-- Quick Books List -->
+        <div class="section" style="grid-column: 1 / -1">
+          <h2>📚 Current Books List</h2>
+          <button onclick="getAllBooks()" class="success">
+            Refresh Books List
+          </button>
+          <div class="book-list" id="bookList">
+            No books loaded. Click "Get All Books" to load.
+          </div>
+        </div>
+      </div>
+
+      <div class="footer">
+        <p>Book Management API - Complete REST API Example</p>
+        <p>
+          Server runs on <strong>http://localhost:3001</strong> |
+          <a href="#" onclick="getApiInfo()">API Info</a>
+        </p>
+      </div>
+    </div>
+
+    <script>
+      const API_URL = "http://localhost:3001";
+
+      // ============================================
+      // HELPER FUNCTIONS
+      // ============================================
+
+      function displayResponse(data, status = 200) {
+        const responseDiv = document.getElementById("response");
+        const statusClass =
+          status >= 200 && status < 300 ? "status-success" : "status-error";
+        const statusText =
+          status >= 200 && status < 300 ? "✓ Success" : "✗ Error";
+
+        responseDiv.innerHTML = `Status: ${status} <span class="status-badge ${statusClass}">${statusText}</span>\n\n${JSON.stringify(data, null, 2)}`;
+      }
+
+      function displayError(error) {
+        document.getElementById("response").innerHTML =
+          `Error: ${error.message}\n\nMake sure the server is running on ${API_URL}`;
+      }
+
+      async function updateBookList() {
+        try {
+          const response = await fetch(`${API_URL}/books`);
+          const data = await response.json();
+
+          const bookList = document.getElementById("bookList");
+          const books = data.data || data;
+
+          if (books.length === 0) {
+            bookList.innerHTML =
+              '<p style="color: #666; text-align: center;">No books in the library. Add some books!</p>';
+            return;
+          }
+
+          let html = "";
+          books.forEach((book) => {
+            html += `
+                        <div class="book-item">
+                            <h4>
+                                <span class="book-id">ID: ${book.id}</span>
+                                ${book.title}
+                            </h4>
+                            <p>Author: ${book.author}</p>
+                            ${book.createdAt ? `<p style="font-size: 12px; color: #999;">Added: ${new Date(book.createdAt).toLocaleString()}</p>` : ""}
+                        </div>
+                    `;
+          });
+
+          bookList.innerHTML = html;
+        } catch (error) {
+          console.error("Failed to update book list:", error);
+        }
+      }
+
+      // ============================================
+      // API CALL FUNCTIONS
+      // ============================================
+
+      // GET / - API Info
+      async function getApiInfo() {
+        try {
+          const response = await fetch(API_URL);
+          const data = await response.json();
+          displayResponse(data, response.status);
+        } catch (error) {
+          displayError(error);
+        }
+      }
+
+      // GET /books - Get all books
+      async function getAllBooks() {
+        try {
+          const response = await fetch(`${API_URL}/books`);
+          const data = await response.json();
+          displayResponse(data, response.status);
+          updateBookList();
+        } catch (error) {
+          displayError(error);
+        }
+      }
+
+      // GET /books/:id - Get book by ID
+      async function getBookById() {
+        const id = document.getElementById("getBookId").value;
+
+        if (!id) {
+          alert("Please enter a book ID");
+          return;
+        }
+
+        try {
+          const response = await fetch(`${API_URL}/books/${id}`);
+          const data = await response.json();
+          displayResponse(data, response.status);
+        } catch (error) {
+          displayError(error);
+        }
+      }
+
+      // GET /books/search/:query - Search books
+      async function searchBooks() {
+        const query = document.getElementById("searchQuery").value;
+
+        if (!query) {
+          alert("Please enter a search term");
+          return;
+        }
+
+        try {
+          const response = await fetch(
+            `${API_URL}/books/search/${encodeURIComponent(query)}`,
+          );
+          const data = await response.json();
+          displayResponse(data, response.status);
+        } catch (error) {
+          displayError(error);
+        }
+      }
+
+      // POST /books - Add a book
+      async function addBook() {
+        const title = document.getElementById("newTitle").value;
+        const author = document.getElementById("newAuthor").value;
+
+        if (!title || !author) {
+          alert("Please enter both title and author");
+          return;
+        }
+
+        try {
+          const response = await fetch(`${API_URL}/books`, {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({ title, author }),
+          });
+          const data = await response.json();
+          displayResponse(data, response.status);
+          getAllBooks(); // Refresh the list
+
+          // Clear inputs
+          document.getElementById("newTitle").value = "";
+          document.getElementById("newAuthor").value = "";
+        } catch (error) {
+          displayError(error);
+        }
+      }
+
+      // Sample books
+      async function addSampleBook1() {
+        document.getElementById("newTitle").value = "The Great Gatsby";
+        document.getElementById("newAuthor").value = "F. Scott Fitzgerald";
+        await addBook();
+      }
+
+      async function addSampleBook2() {
+        document.getElementById("newTitle").value = "To Kill a Mockingbird";
+        document.getElementById("newAuthor").value = "Harper Lee";
+        await addBook();
+      }
+
+      async function addSampleBook3() {
+        document.getElementById("newTitle").value = "1984";
+        document.getElementById("newAuthor").value = "George Orwell";
+        await addBook();
+      }
+
+      async function addSampleBook4() {
+        document.getElementById("newTitle").value = "The Hobbit";
+        document.getElementById("newAuthor").value = "J.R.R. Tolkien";
+        await addBook();
+      }
+
+      // PUT /books/:id - Update book
+      async function updateBook() {
+        const id = document.getElementById("updateId").value;
+        const title = document.getElementById("updateTitle").value;
+        const author = document.getElementById("updateAuthor").value;
+
+        if (!id) {
+          alert("Please enter a book ID");
+          return;
+        }
+
+        if (!title && !author) {
+          alert("Please enter at least one field to update");
+          return;
+        }
+
+        const body = {};
+        if (title) body.title = title;
+        if (author) body.author = author;
+
+        try {
+          const response = await fetch(`${API_URL}/books/${id}`, {
+            method: "PUT",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify(body),
+          });
+          const data = await response.json();
+          displayResponse(data, response.status);
+          getAllBooks(); // Refresh the list
+
+          // Clear inputs
+          document.getElementById("updateTitle").value = "";
+          document.getElementById("updateAuthor").value = "";
+        } catch (error) {
+          displayError(error);
+        }
+      }
+
+      // DELETE /books/:id - Delete single book
+      async function deleteBook() {
+        const id = document.getElementById("deleteId").value;
+
+        if (!id) {
+          alert("Please enter a book ID");
+          return;
+        }
+
+        if (!confirm(`Are you sure you want to delete book with ID ${id}?`)) {
+          return;
+        }
+
+        try {
+          const response = await fetch(`${API_URL}/books/${id}`, {
+            method: "DELETE",
+          });
+          const data = await response.json();
+          displayResponse(data, response.status);
+          getAllBooks(); // Refresh the list
+        } catch (error) {
+          displayError(error);
+        }
+      }
+
+      // DELETE /books - Delete all books
+      async function deleteAllBooks() {
+        if (
+          !confirm(
+            "⚠️ Are you sure you want to delete ALL books? This cannot be undone!",
+          )
+        ) {
+          return;
+        }
+
+        try {
+          const response = await fetch(`${API_URL}/books`, {
+            method: "DELETE",
+          });
+          const data = await response.json();
+          displayResponse(data, response.status);
+          getAllBooks(); // Refresh the list
+        } catch (error) {
+          displayError(error);
+        }
+      }
+
+      // Load books on page load
+      window.onload = function () {
+        getAllBooks();
+      };
+    </script>
+  </body>
+</html>
